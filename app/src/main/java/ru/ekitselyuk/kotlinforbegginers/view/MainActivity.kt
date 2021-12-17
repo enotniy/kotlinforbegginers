@@ -1,9 +1,9 @@
 package ru.ekitselyuk.kotlinforbegginers.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import ru.ekitselyuk.kotlinforbegginers.databinding.ActivityMainBinding
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,7 +11,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding.mainContainer.setOnClickListener { }
+
+        //
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
+
+    val name: String = "Egor"
+    //val string: String = String.format("Hello, %s", name)
+    val string = "Hello, $name"
 }

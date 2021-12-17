@@ -38,10 +38,10 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val weather = arguments?.getParcelable<Weather>("WEATHER_EXTRA")
-
-        binding.cityName.text = weather?.city?.name ?: ""
-        binding.temperature.text = weather?.temperature.toString()
+        arguments?.getParcelable<Weather>("WEATHER_EXTRA")?.let { weather ->
+            binding.cityName.text = weather.city.name
+            binding.temperature.text = weather.temperature.toString()
+        }
     }
 
 

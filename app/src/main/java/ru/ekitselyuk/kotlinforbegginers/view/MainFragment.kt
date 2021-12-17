@@ -6,14 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import ru.ekitselyuk.kotlinforbegginers.R
-import ru.ekitselyuk.kotlinforbegginers.viewmodel.MainViewModel
 import ru.ekitselyuk.kotlinforbegginers.databinding.MainFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.AppState
+import ru.ekitselyuk.kotlinforbegginers.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
 
@@ -26,7 +23,9 @@ class MainFragment : Fragment() {
     private val adapter = MainAdapter()
     private var isRussian = true;
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,16 +41,21 @@ class MainFragment : Fragment() {
 
         adapter.listener = MainAdapter.OnItemClick { weather ->
 
-            val bundle = Bundle()
-            bundle.putParcelable("WEATHER_EXTRA", weather)
+            val bundle = Bundle().apply {
+                putParcelable("WEATHER_EXTRA", weather)
+                putString("Test", "test")
+                putString("Test", "test")
+                putString("Test", "test")
+                putString("Test", "test")
+            }
 
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, DetailFragment.newInstance(bundle))
-                .addToBackStack("")
-                .commit()
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .add(R.id.main_container, DetailFragment.newInstance(bundle))
+                    .addToBackStack("")
+                    .commit()
+            }
         }
-
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // подписались на изменения live data
         viewModel.getData().observe(viewLifecycleOwner, { state ->
             render(state)
@@ -79,20 +83,19 @@ class MainFragment : Fragment() {
                 val weather: List<Weather> = state.data as List<Weather>
                 adapter.setWeather(weather)
 
-                binding.loadingContainer.visibility = View.GONE
+                binding.loadingContainer.hide()
             }
             is AppState.Error -> {
-                binding.loadingContainer.visibility = View.VISIBLE
-                Snackbar.make(binding.root,
-                    state.error.message.toString(),
-                    Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Попробовать снова") {
+                binding.loadingContainer.show()
+                binding.root.showSnackBar(state.error.message.toString(),
+                    "Попробовать снова",
+                    {
                         // Запросили новые данные
                         viewModel.getWeatherFromLocalStorageRus()
-                    }.show()
+                    })
             }
             is AppState.Loading ->
-                binding.loadingContainer.visibility = View.VISIBLE
+                binding.loadingContainer.show()
         }
 
     }
@@ -101,4 +104,15 @@ class MainFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
+
+    val list = listOf<String>(
+        "123",
+        "123123",
+        "123213",
+        "123213",
+        "123213",
+        "123213",
+        "123213",
+        "123213",
+    )
 }

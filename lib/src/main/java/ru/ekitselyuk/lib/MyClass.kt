@@ -9,31 +9,36 @@ var result = ""
 
 fun main() {
 
-    lines = File(Paths.get("advent_5.test.txt").toAbsolutePath().toString())
-    //lines = File(Paths.get("advent_1.test").toAbsolutePath().toString())
+    var position = 0 to 0
+    File(Paths.get("advent_6.test.txt").toAbsolutePath().toString())
+    //File(Paths.get("advent_1.test.txt").toAbsolutePath().toString())
         .readLines()
-        .drop(1)
-        .map {
-            it.split(" ")
-                .map { num -> num.toLong() }
+        .first()
+        .forEach {
+            position = when(it) {
+                'L' -> position.copy(first = position.first - 1)
+                'R' -> position.copy(first = position.first + 1)
+                'D' -> position.copy(second = position.second - 1)
+                'U' -> position.copy(second = position.second + 1)
+                else -> throw Exception()
+            }
         }
-    next(0, "")
 
-    println(results.sorted().take(1234567))
-    println(results.sorted()[1234567 - 1])
-}
+    var path = ""
 
-fun next(line: Int, x: String) {
-    if (line >= lines.size) {
-        return
+    if (position.second < 0) {
+        repeat(position.second * -1) { path += 'D' }
+    }
+    if (position.first < 0) {
+        repeat(position.first * -1) { path += 'L' }
+    }
+    if (position.first > 0) {
+        repeat(position.first) { path += 'R' }
+    }
+    if (position.second > 0) {
+        repeat(position.second ) { path += 'U' }
     }
 
-    for (num in lines[line]) {
-        val res = x + num
-        if (line == lines.size - 1) {
-            results.add(res.toLong())
-        } else {
-            next(line + 1, res)
-        }
-    }
+    println(position)
+    println(path)
 }
