@@ -7,17 +7,4 @@
     android:id="@+id/main_container"
     tools:context=".view.MainActivity">
 
-    <fragment
-        android:name="ru.ekitselyuk.kotlinforbegginers.view.MainFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <FrameLayout
-        android:id="@+id/main_container2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-    </FrameLayout>
-
 </LinearLayout>

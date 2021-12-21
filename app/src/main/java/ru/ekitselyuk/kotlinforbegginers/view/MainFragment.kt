@@ -43,15 +43,11 @@ class MainFragment : Fragment() {
 
             val bundle = Bundle().apply {
                 putParcelable("WEATHER_EXTRA", weather)
-                putString("Test", "test")
-                putString("Test", "test")
-                putString("Test", "test")
-                putString("Test", "test")
             }
 
             activity?.supportFragmentManager?.apply {
                 beginTransaction()
-                    .add(R.id.main_container, DetailFragment.newInstance(bundle))
+                    .replace(R.id.main_container, DetailFragment.newInstance(bundle))
                     .addToBackStack("")
                     .commit()
             }

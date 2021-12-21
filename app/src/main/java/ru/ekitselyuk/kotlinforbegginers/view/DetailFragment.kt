@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
@@ -11,6 +12,8 @@ import ru.ekitselyuk.kotlinforbegginers.databinding.DetailFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.MainViewModel
 import ru.ekitselyuk.kotlinforbegginers.databinding.MainFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
+import ru.ekitselyuk.kotlinforbegginers.model.WeatherDTO
+import ru.ekitselyuk.kotlinforbegginers.model.WeatherLoader
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.AppState
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.DetailViewModel
 
@@ -39,8 +42,23 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.getParcelable<Weather>("WEATHER_EXTRA")?.let { weather ->
+
             binding.cityName.text = weather.city.name
-            binding.temperature.text = weather.temperature.toString()
+            binding.cityCoordinates.text = "${weather.city.lat} ${weather.city.lon}"
+
+            WeatherLoader.load(weather.city, object : WeatherLoader.OnWeatherLoadListener {
+                override fun onLoaded(weatherDTO: WeatherDTO) {
+                    weatherDTO.fact?.let { fact ->
+                        binding.weatherCondition.text = fact.condition
+                        binding.temperatureValue.text = fact.temp?.toString()
+                        binding.feelsLikeValue.text = fact.feelsLike?.toString()
+                    }
+                }
+
+                override fun onFailed(throwable: Throwable) {
+                    Toast.makeText(requireContext(), throwable.message, Toast.LENGTH_LONG).show()
+                }
+            })
         }
     }
 
