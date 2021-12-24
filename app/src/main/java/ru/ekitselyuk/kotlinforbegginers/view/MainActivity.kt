@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import ru.ekitselyuk.kotlinforbegginers.R
 import ru.ekitselyuk.kotlinforbegginers.databinding.ActivityMainBinding
+import ru.ekitselyuk.kotlinforbegginers.model.MainWorker
 import ru.ekitselyuk.kotlinforbegginers.model.RepositoryImpl
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
 import java.io.BufferedReader
@@ -31,11 +32,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val json = Gson().toJson(RepositoryImpl().getWeatherFromServer())
-        Log.d("DEBUGLOG", json )
-
         supportFragmentManager.beginTransaction()
             .add(R.id.main_container, MainFragment.newInstance())
             .commit()
+
+        Log.d("DEBUGLOG", "startWorker" )
+        MainWorker.startWorker(this)
     }
 }

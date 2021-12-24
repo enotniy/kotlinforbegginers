@@ -11,6 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KotlinForBegginers">
+        <receiver
+            android:name=".model.MainReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".model.MainIntentService"
+            android:exported="false" />
+
         <activity
             android:name=".view.MainActivity"
             android:exported="true">
@@ -20,6 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".model.WeatherService" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package ru.ekitselyuk.kotlinforbegginers.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.ekitselyuk.kotlinforbegginers.databinding.DetailFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.MainViewModel
 import ru.ekitselyuk.kotlinforbegginers.databinding.MainFragmentBinding
-import ru.ekitselyuk.kotlinforbegginers.model.Weather
-import ru.ekitselyuk.kotlinforbegginers.model.WeatherDTO
-import ru.ekitselyuk.kotlinforbegginers.model.WeatherLoader
+import ru.ekitselyuk.kotlinforbegginers.model.*
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.AppState
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.DetailViewModel
 
@@ -27,6 +26,13 @@ class DetailFragment : Fragment() {
         }
     }
 
+    private val listener = Repository.OnLoadListener {
+        RepositoryImpl.getWeatherFromServer()?.let { weather ->
+            binding.weatherCondition.text = weather.condition
+            binding.temperatureValue.text = weather.temperature.toString()
+            binding.feelsLikeValue.text = weather.feelsLike.toString()
+        } ?: Toast.makeText(context, "ОШИБКА", Toast.LENGTH_LONG).show()
+    }
     private var _binding: DetailFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -41,23 +47,16 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        RepositoryImpl.addLoadedListener(listener)
+
         arguments?.getParcelable<Weather>("WEATHER_EXTRA")?.let { weather ->
 
             binding.cityName.text = weather.city.name
             binding.cityCoordinates.text = "${weather.city.lat} ${weather.city.lon}"
 
-            WeatherLoader.load(weather.city, object : WeatherLoader.OnWeatherLoadListener {
-                override fun onLoaded(weatherDTO: WeatherDTO) {
-                    weatherDTO.fact?.let { fact ->
-                        binding.weatherCondition.text = fact.condition
-                        binding.temperatureValue.text = fact.temp?.toString()
-                        binding.feelsLikeValue.text = fact.feelsLike?.toString()
-                    }
-                }
-
-                override fun onFailed(throwable: Throwable) {
-                    Toast.makeText(requireContext(), throwable.message, Toast.LENGTH_LONG).show()
-                }
+            requireActivity().startService(Intent(requireContext(), MainIntentService::class.java).apply {
+                putExtra("WEATHER_EXTRA", weather)
             })
         }
     }
@@ -65,6 +64,7 @@ class DetailFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        RepositoryImpl.removeLoadedListener(listener)
         _binding = null
     }
 }
