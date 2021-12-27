@@ -9,6 +9,7 @@ data class Weather(
     val temperature: Int = 0,
     val feelsLike: Int = 0,
     val condition: String = "",
+    val icon: String = "",
 ) : Parcelable
 
 @Parcelize
@@ -48,4 +49,3 @@ fun getRussianCities() = listOf(
     Weather(City("Ростов-на-Дону", 47.2357137, 39.701505), 17, 18),
     Weather(City("Уфа", 54.7387621, 55.972055400000045), 19, 20)
 )
-

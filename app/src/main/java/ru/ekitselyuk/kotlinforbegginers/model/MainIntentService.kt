@@ -15,10 +15,10 @@ class MainIntentService : IntentService("MainIntentService") {
     override fun onHandleIntent(intent: Intent?) {
         Log.d(TAG, "current thread : " + Thread.currentThread().name)
 
-        Thread.sleep(5000)
+        Thread.sleep(1000)
 
         intent?.getParcelableExtra<Weather>("WEATHER_EXTRA")?.let { weather ->
-            WeatherLoader.load(weather.city, object : WeatherLoader.OnWeatherLoadListener {
+            WeatherLoader.loadRetrofit(weather.city, object : WeatherLoader.OnWeatherLoadListener {
                 override fun onLoaded(weatherDTO: WeatherDTO) {
                     applicationContext.sendBroadcast(Intent(applicationContext, MainReceiver::class.java).apply {
                         action = MainReceiver.WEATHER_LOAD_SUCCESS
@@ -26,6 +26,7 @@ class MainIntentService : IntentService("MainIntentService") {
                             temperature = weatherDTO.fact?.temp ?: 0,
                             feelsLike = weatherDTO.fact?.feelsLike ?: 0,
                             condition = weatherDTO.fact?.condition ?: "",
+                            icon = weatherDTO.fact?.icon ?: "",
                         ))
                     })
                 }
