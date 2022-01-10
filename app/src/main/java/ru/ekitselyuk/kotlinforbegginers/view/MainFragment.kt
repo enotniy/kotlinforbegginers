@@ -1,5 +1,7 @@
 package ru.ekitselyuk.kotlinforbegginers.view
 
+import android.app.job.JobService
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +23,7 @@ class MainFragment : Fragment() {
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
     private val adapter = MainAdapter()
-    private var isRussian = true;
+    private var isRussian = true
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -69,6 +71,10 @@ class MainFragment : Fragment() {
                 viewModel.getWeatherFromLocalStorageWorld()
                 binding.mainFAB.setImageResource(R.drawable.ic_baseline_flag_24)
             }
+        }
+
+        binding.historyFAB.setOnClickListener {
+            requireContext().startActivity(Intent(requireContext(), HistoryActivity::class.java))
         }
     }
 

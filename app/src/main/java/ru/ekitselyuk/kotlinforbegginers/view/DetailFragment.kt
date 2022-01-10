@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.load
@@ -19,6 +20,7 @@ import ru.ekitselyuk.kotlinforbegginers.model.MainIntentService
 import ru.ekitselyuk.kotlinforbegginers.model.Repository
 import ru.ekitselyuk.kotlinforbegginers.model.RepositoryImpl
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
+import ru.ekitselyuk.kotlinforbegginers.viewmodel.DetailViewModel
 
 class DetailFragment : Fragment() {
 
@@ -30,7 +32,12 @@ class DetailFragment : Fragment() {
         }
     }
 
+    private val viewModel: DetailViewModel by lazy {
+        ViewModelProvider(this).get(DetailViewModel::class.java)
+    }
+
     private val listener = Repository.OnLoadListener {
+
         RepositoryImpl.getWeatherFromServer()?.let { weather ->
             binding.weatherCondition.text = weather.condition
             binding.temperatureValue.text = weather.temperature.toString()
@@ -39,15 +46,8 @@ class DetailFragment : Fragment() {
             binding.weatherImage.load("https://picsum.photos/300/300")
 
             Log.d("DEBUGLOG", "https://yastatic.net/weather/i/icons/funky/dark/${weather.icon}.svg")
-//            val request = ImageRequest.Builder(requireContext())
-//                .data("https://yastatic.net/weather/i/icons/funky/dark/${weather.icon}.svg")
-//                .target(binding.weatherImage)
-//                .build()
-//
-//            ImageLoader.Builder(requireContext())
-//                .componentRegistry { add(SvgDecoder(requireContext())) }
-//                .build()
-//                .enqueue(request)
+
+            viewModel.saveHistory(weather)
 
         } ?: Toast.makeText(context, "ОШИБКА", Toast.LENGTH_LONG).show()
     }
