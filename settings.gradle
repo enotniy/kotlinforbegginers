@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "KotlinForBegginers"
 include ':app'
 include ':lib'
+include ':contentproviderclient'
