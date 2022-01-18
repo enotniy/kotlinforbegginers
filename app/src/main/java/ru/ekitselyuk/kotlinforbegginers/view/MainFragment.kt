@@ -1,11 +1,22 @@
 package ru.ekitselyuk.kotlinforbegginers.view
 
-import android.app.job.JobService
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ru.ekitselyuk.kotlinforbegginers.R
@@ -13,6 +24,8 @@ import ru.ekitselyuk.kotlinforbegginers.databinding.MainFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.AppState
 import ru.ekitselyuk.kotlinforbegginers.viewmodel.MainViewModel
+import java.io.IOException
+import java.util.*
 
 class MainFragment : Fragment() {
 
@@ -29,6 +42,107 @@ class MainFragment : Fragment() {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    private val permissionResult =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            val fineLocationGranted = result.getOrDefault(
+                Manifest.permission.ACCESS_FINE_LOCATION, false
+            )
+            val coarseLocationGranted = result.getOrDefault(
+                Manifest.permission.ACCESS_COARSE_LOCATION, false
+            )
+
+            when {
+                fineLocationGranted or coarseLocationGranted -> showLocation()
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) -> AlertDialog.Builder(requireActivity()).setTitle("Дай доступ")
+                    .setMessage("Ну очень надо")
+                    .setPositiveButton("Дать доступ") { _, _ -> requestPermission() }
+                    .setNegativeButton("Не давать доступ") { dialog, _ -> dialog.dismiss() }
+                    .create()
+                    .show()
+                else -> requestPermission()
+            }
+        }
+
+    @SuppressLint("MissingPermission")
+    private fun showLocation() {
+
+        requireActivity().startActivity(Intent(requireContext(), MapsActivity::class.java))
+
+//        val locationManager =
+//            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//
+//        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//            val providerGps = locationManager.getProvider(LocationManager.GPS_PROVIDER)
+//
+//            providerGps?.let {
+//                locationManager.requestLocationUpdates(
+//                    LocationManager.GPS_PROVIDER,
+//                    60_000L,
+//                    100F,
+//                    object: LocationListener {
+//                        override fun onLocationChanged(location: Location) {
+//                            getAddressByLocation(location)
+//                        }
+//                        override fun onStatusChanged(
+//                            provider: String?,
+//                            status: Int,
+//                            extras: Bundle?
+//                        ) {
+//                            // do noting
+//                        }
+//
+//                        override fun onProviderEnabled(provider: String) {
+//
+//                        }
+//
+//                        override fun onProviderDisabled(provider: String) {
+//
+//                        }
+//                    }
+//                )
+//            } ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let { location ->
+//                getAddressByLocation(location)
+//            }
+//        } else {
+//            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let { location ->
+//                getAddressByLocation(location)
+//            }
+//        }
+    }
+
+
+    private fun getAddressByLocation(location: Location) {
+        val geocoder = Geocoder(requireActivity())
+        Thread {
+            try {
+                val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+
+                requireActivity().runOnUiThread {
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Я тут был ${Date().time  - location.time} назад")
+                        .setMessage(address[0].getAddressLine(0))
+                        .show()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun requestPermission() {
+        permissionResult.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,6 +151,7 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mainRecyclerView.adapter = adapter
@@ -75,6 +190,10 @@ class MainFragment : Fragment() {
 
         binding.historyFAB.setOnClickListener {
             requireContext().startActivity(Intent(requireContext(), HistoryActivity::class.java))
+        }
+
+        binding.locationFAB.setOnClickListener {
+            requestPermission()
         }
     }
 

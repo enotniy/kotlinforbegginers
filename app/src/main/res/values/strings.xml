@@ -2,4 +2,5 @@
     <string name="app_name">KotlinForBegginers</string>
     <string name="temperature_label">Температура</string>
     <string name="feels_like_label">Ощущается</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
