@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "923350809825",
+    "project_id": "testproject-fccf7",
+    "storage_bucket": "testproject-fccf7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:923350809825:android:9052d08143ef5646a18ba0",
+        "android_client_info": {
+          "package_name": "com.example.geekbrainskotlin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9EZ51qwWUtzxh6mXtyoecGFf6ajwBDKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:923350809825:android:a2c3603d435e9c37a18ba0",
+        "android_client_info": {
+          "package_name": "ru.ekitselyuk.androidforbegginers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9EZ51qwWUtzxh6mXtyoecGFf6ajwBDKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:923350809825:android:29d5c7a748da2ab4a18ba0",
+        "android_client_info": {
+          "package_name": "ru.ekitselyuk.kotlinforbegginers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9EZ51qwWUtzxh6mXtyoecGFf6ajwBDKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "923350809825-7b0kf9vjrktchmgaf4allodej4cm66p5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
