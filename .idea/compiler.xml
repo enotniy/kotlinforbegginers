@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="1.7">
       <module name="KotlinForBegginers.app" target="11" />
       <module name="KotlinForBegginers.contentproviderclient" target="11" />
+      <module name="KotlinForBegginers.flavorapp" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -16,6 +16,12 @@
         <entry key="app/src/main/res/layout/main_item.xml" value="0.2703125" />
         <entry key="app/src/main/res/menu/main.xml" value="0.2828125" />
         <entry key="contentproviderclient/src/main/res/layout/activity_main.xml" value="0.20520833333333333" />
+        <entry key="flavorapp/src/google/res/drawable/ic_launcher_background.xml" value="0.27395833333333336" />
+        <entry key="flavorapp/src/huawei/res/drawable-v24/ic_launcher_foreground.xml" value="0.27395833333333336" />
+        <entry key="flavorapp/src/huawei/res/drawable/ic_launcher_background.xml" value="0.27395833333333336" />
+        <entry key="flavorapp/src/huawei/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.27395833333333336" />
+        <entry key="flavorapp/src/main/res/layout/activity_main.xml" value="0.2635416666666667" />
+        <entry key="flavorapp/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.27395833333333336" />
       </map>
     </option>
   </component>
