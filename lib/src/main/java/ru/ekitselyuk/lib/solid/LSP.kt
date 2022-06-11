@@ -1,22 +1,24 @@
 package ru.ekitselyuk.lib.solid
 
-open class Post3 {
-    open fun createPost(repository: Repository, message: String) {
-        repository.addPost(message)
+open class Post3: Poster {
+    override fun createPost(repository: Repository, postMessage: String) {
+        repository.addPost(postMessage)
     }
 }
 
 class TagPost : Post3() {
-    override fun createPost(repository: Repository, message: String) {
-        repository.addTag(message)
+    override fun createPost(repository: Repository, postMessage: String) {
+        repository.addTag(postMessage)
     }
 }
 
 class MentionPost : Post3() {
 
-    override fun createPost(repository: Repository, message: String) {
-        repository.notifyUser(parseUser(message))
-        repository.addMentionPost(message)
+    override fun createPost(repository: Repository, postMessage: String) {
+        val user = parseUser(postMessage)
+        repository.notifyUser(user)
+        repository.addPost(postMessage)
+        super.createPost(repository, postMessage)
     }
 
     private fun parseUser(message: String) =
@@ -24,10 +26,6 @@ class MentionPost : Post3() {
             .split(" ")
             .first()
             .removePrefix("@")
-}
-
-object MessageQueue {
-    fun getUnhandledPostsMessages(): List<String> = listOf()
 }
 
 class PostHandler() {
@@ -41,7 +39,7 @@ class PostHandler() {
             val post = when {
                 message.startsWith("#") -> TagPost()
                 message.startsWith("@") -> MentionPost()
-                else -> Post3()
+                else -> Post1()
             }
 
             post.createPost(repository, message)

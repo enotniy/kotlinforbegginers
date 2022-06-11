@@ -1,13 +1,18 @@
 package ru.ekitselyuk.lib.solid
 
-class Post5(private val logger: Logger) {
-
-    fun createPost(repository: Repository, post: String) {
+class Post5(private val logger: Logger = EventLogger()) : Poster {
+    override fun createPost(repository: Repository, postMessage: String) {
         try {
-            repository.addPost(post)
+            repository.addPost(postMessage)
         } catch (e: Exception) {
-            logger.log(e.message.toString())
+            logger.log(e.localizedMessage)
         }
+    }
+}
+
+class EventLogger(private val repository: Repository = Repository) : Logger {
+    override fun log(message: String) {
+        repository.log(message)
     }
 }
 
@@ -17,6 +22,8 @@ object DebugLogger : Logger {
     }
 }
 
-interface Logger {
-    fun log(message: String)
+object StubLogger : Logger {
+    override fun log(message: String) {
+        // do nothing
+    }
 }

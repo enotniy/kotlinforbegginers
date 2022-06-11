@@ -1,40 +1,21 @@
 package ru.ekitselyuk.lib.solid
 
-class Post1 {
+import java.io.File
 
-    private val logger = EventLogger
+class Post1(val logger: Logger = ErrorLogger()): Poster {
 
-    fun createPost(repository: Repository, post: String) {
+    override fun createPost(repository: Repository, postMessage: String) {
         try {
-            repository.addPost(post)
+            repository.addPost(postMessage)
         } catch (e: Exception) {
-            logger.log(e.message.toString())
+            logger.log(e.localizedMessage)
         }
     }
-
-    fun showPost() {
-    }
 }
 
-object FileLogger {
-    fun log(message: String) {
-        // write to file
+class ErrorLogger(private val repository: Repository = Repository): Logger {
+    override fun log(message: String) {
+        repository.log(message)
+        File("path").writeText(message)
     }
-}
-
-object EventLogger {
-
-    var repository = Repository
-
-    fun log(message: String) {
-        repository.log("Error : ${message}")
-    }
-}
-
-object Repository {
-    fun addPost(message: String) {}
-    fun addTag(message: String) {}
-    fun addMentionPost(message: String) {}
-    fun notifyUser(user: String) {}
-    fun log(error: String) {}
 }

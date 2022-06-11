@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
@@ -19,6 +20,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import ru.ekitselyuk.kotlinforbegginers.R
 import ru.ekitselyuk.kotlinforbegginers.databinding.MainFragmentBinding
 import ru.ekitselyuk.kotlinforbegginers.model.Weather
@@ -155,6 +158,52 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mainRecyclerView.adapter = adapter
+
+        val helperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX / 2,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+
+            override fun isItemViewSwipeEnabled(): Boolean  = true
+            override fun isLongPressDragEnabled(): Boolean  = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //TODO("Not yet implemented")
+            }
+
+            override fun getSwipeVelocityThreshold(defaultValue: Float): Float {
+                return super.getSwipeVelocityThreshold(defaultValue)
+            }
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.5f
+            }
+        }
+
+        val helper = ItemTouchHelper(helperCallback)
+        helper.attachToRecyclerView(binding.mainRecyclerView)
 
         adapter.listener = MainAdapter.OnItemClick { weather ->
 
