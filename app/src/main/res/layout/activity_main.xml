@@ -7,4 +7,11 @@
     android:id="@+id/main_container"
     tools:context=".view.MainActivity">
 
+    <AutoCompleteTextView
+        android:layout_margin="8dp"
+        android:id="@+id/actv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="LabelFor" />
+
 </LinearLayout>
