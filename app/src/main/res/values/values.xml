@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="rb_ClimbedOver_1" type="id"/>
+    <item name="rb_ClimbedOver_2" type="id"/>
+    <item name="rb_ClimbedOver_3" type="id"/>
+    <item name="rb_IsAgree_Yes" type="id"/>
+    <item name="rb_IsAgree_No" type="id"/>
+    <item name="rb_IsDamaged3PersonProperty_No" type="id"/>
+    <item name="rb_IsDamaged3PersonProperty_Yes" type="id"/>
+    <item name="rb_VehicleInRunningOrder_Yes" type="id"/>
+    <item name="rb_VehicleInRunningOrder_No" type="id"/>
+    <item name="lyt_VehicleCount" type="id"/>
+    <item name="edt_VehicleCount" type="id"/>
+    <item name="lyt_VehicleInRunningOrder" type="id"/>
+    <item name="rbParent_VehicleInRunningOrder" type="id"/>
+    <item name="lyt_ClimbedOver" type="id"/>
+    <item name="rbParent_ClimbedOver" type="id"/>
+    <item name="lyt_IsDamaged3PersonProperty" type="id"/>
+    <item name="rbParent_IsDamaged3PersonProperty" type="id"/>
+    <item name="lyt_IsAgree" type="id"/>
+    <item name="rbParent_IsAgree" type="id"/>
+    <item name="cb_AgreedStatement" type="id"/>
+
+</resources>
