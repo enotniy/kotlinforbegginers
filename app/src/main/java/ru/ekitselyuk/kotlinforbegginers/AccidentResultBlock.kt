@@ -40,217 +40,163 @@ data class AccidentResultBlock(
         position: Int,
         payloads: MutableList<Any>?
     ) {
-        if (hld != null) {
+        if (hld == null) {
+            return
+        }
 
-            if (isVek) {
-                vekData?.vekData?.vekData?.AccidentResult?.let { accidentResult ->
-                    accidentResult.VehicleCount?.let {
-                        hld.edtVehicleCount.setText(it.toString())
-                        if (it == 2) {
-                            showLytVehicleInRunningOrder(hld, true)
-                        }
+        if (isVek) {
+            vekData?.vekData?.vekData?.AccidentResult?.let { accidentResult ->
+                accidentResult.VehicleCount?.let {
+                    hld.edtVehicleCount.setText(it.toString())
+                    hld.lytVehicleInRunningOrder.showIf { it == 2 }
+                }
+                accidentResult.VehicleInRunningOrder?.let {
+                    if (it) {
+                        hld.rbVehicleInRunningOrderYes.isChecked = true
+                    } else {
+                        hld.rbVehicleInRunningOrderNo.isChecked = true
                     }
-                    accidentResult.VehicleInRunningOrder?.let {
-                        if (it) {
-                            hld.rbVehicleInRunningOrderYes.isChecked = true
-                            showLytIsDamaged3PersonProperty(hld, true)
 
-                        } else {
-                            hld.rbVehicleInRunningOrderNo.isChecked = true
+                    hld.lytIsDamaged3PersonProperty.showIf { it }
+                }
+                accidentResult.ClimbedOver?.let {
+                    when (it) {
+                        1 -> {
+                            hld.rbClimbedOver1.isChecked = true
+                            hld.lytIsDamaged3PersonProperty.showIf { true }
+                        }
+                        2 -> {
+                            hld.rbClimbedOver2.isChecked = true
+                        }
+                        0 -> {
+                            hld.rbClimbedOver3.isChecked = true
                         }
                     }
-                    accidentResult.ClimbedOver?.let {
-                        when (it) {
-                            1 -> {
-                                hld.rbClimbedOver1.isChecked = true
-                                showLytIsDamaged3PersonProperty(hld, true)
-                            }
-                            2 -> {
-                                hld.rbClimbedOver2.isChecked = true
-                            }
-                            0 -> {
-                                hld.rbClimbedOver3.isChecked = true
-                            }
-                        }
 
-                    }
-                    accidentResult.IsDamaged3PersonProperty?.let {
-                        if (it) {
-                            hld.rbIsDamaged3PersonPropertyYes.isChecked = true
-                        } else {
-                            hld.rbIsDamaged3PersonPropertyNo.isChecked = true
-                            showlytIsAgree(hld, true)
-                        }
-                    }
-                    accidentResult.IsAgree?.let {
-                        if (it) {
-                            hld.rbIsAgreeYes.isChecked = true
-                        } else {
-                            hld.rbIsAgreeNo.isChecked = true
-                        }
-                    }
-                    accidentResult.AgreedStatement?.let {
-                        hld.cbAgreedStatement.isChecked = it
+                }
+                accidentResult.IsDamaged3PersonProperty?.let {
+                    if (it) {
+                        hld.rbIsDamaged3PersonPropertyYes.isChecked = true
+                    } else {
+                        hld.rbIsDamaged3PersonPropertyNo.isChecked = true
+                        hld.lytIsAgree.showIf { true }
                     }
                 }
-            }
 
-            if (eventType == "1.1.1." ||
-                eventType == "1.1.2.1." ||
-                eventType == "1.1.2.4." ||
-                eventType == "1.1.2.5." ||
-                eventType == "1.1.3." ||
-                eventType == "1.1.6." ||
-                eventType == "1.1.9."
-            ) {
-                showLytVehicleCount(hld, true)
+
+                accidentResult.IsAgree?.let {
+                    if (it) {
+                        hld.rbIsAgreeYes.isChecked = true
+                    } else {
+                        hld.rbIsAgreeNo.isChecked = true
+                    }
+                }
+                accidentResult.AgreedStatement?.let {
+                    hld.cbAgreedStatement.isChecked = it
+                }
+            }
+        }
+
+        hld.lytVehicleCount.showIf {
+            eventType == "1.1.1." ||
+                    eventType == "1.1.2.1." ||
+                    eventType == "1.1.2.4." ||
+                    eventType == "1.1.2.5." ||
+                    eventType == "1.1.3." ||
+                    eventType == "1.1.6." ||
+                    eventType == "1.1.9."
+        }
+
+        hld.lytIsDamaged3PersonProperty.showIf { eventType == "1.1.2.5." }
+        hld.lytClimbedOver.showIf { eventType == "1.1.2.4." }
+
+        if (eventType == "1.1.2.4.") {
+            hld.lytIsDamaged3PersonProperty.showIf { hld.rbClimbedOver1.isChecked }
+        }
+
+        hld.cbAgreedStatement.showIf { eventType == "1.1.7." }
+
+        hld.edtVehicleCount.addTextChangedListener {
+            if (it.toString() == "2") {
+                if (eventType == "1.1.1." || eventType == "1.1.2.1.") {
+                    hld.lytVehicleInRunningOrder.showIf { true }
+                    hld.lytIsDamaged3PersonProperty.showIf { hld.rbVehicleInRunningOrderYes.isChecked }
+
+                    if (hld.rbVehicleInRunningOrderYes.isChecked) {
+                        hld.lytIsAgree.showIf { hld.rbIsDamaged3PersonPropertyNo.isChecked }
+                        hld.cbAgreedStatement.showIf { hld.rbIsDamaged3PersonPropertyNo.isChecked }
+                    }
+                }
             } else {
-                showLytVehicleCount(hld, false)
+                hld.lytVehicleInRunningOrder.showIf { false }
+                hld.lytIsDamaged3PersonProperty.showIf { false }
+                hld.lytIsAgree.showIf { false }
             }
 
-            if (eventType == "1.1.2.5.") {
-                showLytIsDamaged3PersonProperty(hld, true)
-            }
+            vekData?.vekData?.vekData?.AccidentResult?.VehicleCount =
+                it.toString().toIntOrNull()
+        }
 
-            if (eventType == "1.1.2.4.") {
-                showLytClimbedOver(hld, true)
-
-                if (hld.rbClimbedOver1.isChecked) {
-                    showLytIsDamaged3PersonProperty(hld, true)
-                }
-            }
-
-            if (eventType == "1.1.7.") {
-                hld.cbAgreedStatement.visibility = View.VISIBLE
-            }
-
-            hld.edtVehicleCount.addTextChangedListener {
-                if (it.toString() == "2") {
+        hld.rbParentVehicleInRunningOrder.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rb_VehicleInRunningOrder_Yes -> {
                     if (eventType == "1.1.1." || eventType == "1.1.2.1.") {
-                        showLytVehicleInRunningOrder(hld, true)
-                        if (hld.rbVehicleInRunningOrderYes.isChecked) {
-                            showLytIsDamaged3PersonProperty(hld, true)
-                            if (hld.rbIsDamaged3PersonPropertyNo.isChecked) {
-                                showlytIsAgree(hld, true)
-                                hld.cbAgreedStatement.visibility = View.VISIBLE
-                            }
-                        }
+                        hld.lytIsDamaged3PersonProperty.showIf { true }
                     }
-                } else {
-                    showLytVehicleInRunningOrder(hld, false)
-                    hld.lytIsDamaged3PersonProperty.visibility = View.GONE
-                    hld.lytIsAgree.visibility = View.GONE
+                    vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = true
                 }
-
-                vekData?.vekData?.vekData?.AccidentResult?.VehicleCount =
-                    it.toString().toIntOrNull()
-            }
-
-            hld.rbParentVehicleInRunningOrder.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.rb_VehicleInRunningOrder_Yes -> {
-                        if (eventType == "1.1.1." || eventType == "1.1.2.1.") {
-                            showLytIsDamaged3PersonProperty(hld, true)
-                        }
-                        vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = true
-                    }
-                    R.id.rb_VehicleInRunningOrder_No -> {
-                        showLytIsDamaged3PersonProperty(hld, false)
-                        vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = false
-                    }
-                }
-            }
-
-            hld.rbParentClimbedOver.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.rb_ClimbedOver_1 -> {
-                        if (eventType == "1.1.2.4.") {
-                            showLytIsDamaged3PersonProperty(hld, true)
-                        }
-                        vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 1
-                    }
-                    R.id.rb_ClimbedOver_2 -> {
-                        showLytIsDamaged3PersonProperty(hld, false)
-                        vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 2
-                    }
-                    R.id.rb_ClimbedOver_3 -> {
-                        showLytIsDamaged3PersonProperty(hld, false)
-                        vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 3
-                    }
-                }
-            }
-
-            hld.rbParentIsAgree.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.rb_IsAgree_Yes -> {
-                        hld.cbAgreedStatement.isEnabled = true
-                        vekData?.vekData?.vekData?.AccidentResult?.IsAgree = true
-                    }
-                    R.id.rb_IsAgree_No -> {
-                        hld.cbAgreedStatement.isChecked = false
-                        hld.cbAgreedStatement.isEnabled = false
-                        vekData?.vekData?.vekData?.AccidentResult?.IsAgree = false
-                    }
-                }
-            }
-
-            hld.rbParentIsDamaged3PersonProperty.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.rb_IsDamaged3PersonProperty_Yes -> {
-                        showlytIsAgree(hld, false)
-                        vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = true
-                    }
-                    R.id.rb_IsDamaged3PersonProperty_No -> {
-                        if (eventType == "1.1.1." || eventType == "1.1.2.1.") {
-                            showlytIsAgree(hld, true)
-                        }
-                        vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = false
-                    }
+                R.id.rb_VehicleInRunningOrder_No -> {
+                    hld.lytIsDamaged3PersonProperty.showIf { false }
+                    vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = false
                 }
             }
         }
-    }
 
-    private fun showLytVehicleCount(hld: ViewHolder, showLyt: Boolean) {
-        if (showLyt) {
-            hld.lytVehicleCount.visibility = View.VISIBLE
-        } else {
-            hld.lytVehicleCount.visibility = View.GONE
+        hld.rbParentClimbedOver.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rb_ClimbedOver_1 -> {
+                    hld.lytIsDamaged3PersonProperty.showIf { eventType == "1.1.2.4." }
+                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 1
+                }
+                R.id.rb_ClimbedOver_2 -> {
+                    hld.lytIsDamaged3PersonProperty.showIf { false }
+                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 2
+                }
+                R.id.rb_ClimbedOver_3 -> {
+                    hld.lytIsDamaged3PersonProperty.showIf { false }
+                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 3
+                }
+            }
         }
-    }
 
-    private fun showLytVehicleInRunningOrder(hld: ViewHolder, showLyt: Boolean) {
-        if (showLyt) {
-            hld.lytVehicleInRunningOrder.visibility = View.VISIBLE
-        } else {
-            hld.lytVehicleInRunningOrder.visibility = View.GONE
+        hld.rbParentIsAgree.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rb_IsAgree_Yes -> {
+                    hld.cbAgreedStatement.isEnabled = true
+                    vekData?.vekData?.vekData?.AccidentResult?.IsAgree = true
+                }
+                R.id.rb_IsAgree_No -> {
+                    hld.cbAgreedStatement.isChecked = false
+                    hld.cbAgreedStatement.isEnabled = false
+                    vekData?.vekData?.vekData?.AccidentResult?.IsAgree = false
+                }
+            }
         }
-    }
 
-    private fun showLytClimbedOver(hld: ViewHolder, showLyt: Boolean) {
-        if (showLyt) {
-            hld.lytClimbedOver.visibility = View.VISIBLE
-        } else {
-            hld.lytClimbedOver.visibility = View.GONE
+        hld.rbParentIsDamaged3PersonProperty.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rb_IsDamaged3PersonProperty_Yes -> {
+                    hld.lytIsAgree.showIf { false }
+                    vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = true
+                }
+                R.id.rb_IsDamaged3PersonProperty_No -> {
+                    hld.lytIsAgree.showIf { eventType == "1.1.1." || eventType == "1.1.2.1." }
+                    vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = false
+                }
+            }
         }
-    }
 
-    private fun showLytIsDamaged3PersonProperty(hld: ViewHolder, showLyt: Boolean) {
-        if (showLyt) {
-            hld.lytIsDamaged3PersonProperty.visibility = View.VISIBLE
-        } else {
-            hld.lytIsDamaged3PersonProperty.visibility = View.GONE
-        }
     }
-
-    private fun showlytIsAgree(hld: ViewHolder, showLyt: Boolean) {
-        if (showLyt) {
-            hld.lytIsAgree.visibility = View.VISIBLE
-        } else {
-            hld.lytIsAgree.visibility = View.GONE
-        }
-    }
-
 
     class ViewHolder(view: View, adapter: FlexibleAdapter<*>) : FlexibleViewHolder(view, adapter) {
 
@@ -288,7 +234,6 @@ data class AccidentResultBlock(
 
         val cbAgreedStatement: AppCompatCheckBox = view.findViewById(R.id.cb_AgreedStatement)
     }
-
 }
 
 
@@ -316,4 +261,19 @@ class VekManager {
 
 class SaveReportReq {
     class MessageClass
+}
+
+enum class EventType(val version: String) {
+    EVENT_1_1_1("1.1.1.")
+}
+
+class VekReportSelector(
+    val isVek: Boolean = true,
+    val vekData: VekManager? = null,
+    val reportReq: SaveReportReq.MessageClass? = null
+) {
+}
+
+inline fun View.showIf(block: () -> Boolean) {
+    visibility = if (block()) View.VISIBLE else View.GONE
 }
