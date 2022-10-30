@@ -15,11 +15,9 @@ import eu.davidea.viewholders.FlexibleViewHolder
 
 data class AccidentResultBlock(
     val blockName: String,
-    val vekData: VekManager? = null,
-    val reportReq: SaveReportReq.MessageClass? = null,
-    val isVek: Boolean = false,
-    val isReport: Boolean = false,
-    val eventType: String? = null
+    val eventType: String? = null,
+    val accidentResult: AccidentResultClass,
+    val accidentResultListener: (AccidentResultClass) -> Unit
 ) :
     AbstractFlexibleItem<AccidentResultBlock.ViewHolder>() {
 
@@ -40,65 +38,65 @@ data class AccidentResultBlock(
         position: Int,
         payloads: MutableList<Any>?
     ) {
+
         if (hld == null) {
             return
         }
 
-        if (isVek) {
-            vekData?.vekData?.vekData?.AccidentResult?.let { accidentResult ->
-                accidentResult.VehicleCount?.let {
-                    hld.edtVehicleCount.setText(it.toString())
-                    hld.lytVehicleInRunningOrder.showIf { it == 2 }
-                }
-                accidentResult.VehicleInRunningOrder?.let {
-                    if (it) {
-                        hld.rbVehicleInRunningOrderYes.isChecked = true
-                    } else {
-                        hld.rbVehicleInRunningOrderNo.isChecked = true
-                    }
 
-                    hld.lytIsDamaged3PersonProperty.showIf { it }
-                }
-                accidentResult.ClimbedOver?.let {
-                    when (it) {
-                        1 -> {
-                            hld.rbClimbedOver1.isChecked = true
-                            hld.lytIsDamaged3PersonProperty.showIf { true }
-                        }
-                        2 -> {
-                            hld.rbClimbedOver2.isChecked = true
-                        }
-                        0 -> {
-                            hld.rbClimbedOver3.isChecked = true
-                        }
-                    }
+        accidentResult.VehicleCount?.let {
+            hld.edtVehicleCount.setText(it.toString())
+            hld.lytVehicleInRunningOrder.showIf { it == 2 }
+        }
+        accidentResult.VehicleInRunningOrder?.let {
+            if (it) {
+                hld.rbVehicleInRunningOrderYes.isChecked = true
+            } else {
+                hld.rbVehicleInRunningOrderNo.isChecked = true
+            }
 
+            hld.lytIsDamaged3PersonProperty.showIf { it }
+        }
+        accidentResult.ClimbedOver?.let {
+            when (it) {
+                1 -> {
+                    hld.rbClimbedOver1.isChecked = true
+                    hld.lytIsDamaged3PersonProperty.showIf { true }
                 }
-                accidentResult.IsDamaged3PersonProperty?.let {
-                    if (it) {
-                        hld.rbIsDamaged3PersonPropertyYes.isChecked = true
-                    } else {
-                        hld.rbIsDamaged3PersonPropertyNo.isChecked = true
-                        hld.lytIsAgree.showIf { true }
-                    }
+                2 -> {
+                    hld.rbClimbedOver2.isChecked = true
                 }
+                0 -> {
+                    hld.rbClimbedOver3.isChecked = true
+                }
+            }
 
-
-                accidentResult.IsAgree?.let {
-                    if (it) {
-                        hld.rbIsAgreeYes.isChecked = true
-                    } else {
-                        hld.rbIsAgreeNo.isChecked = true
-                    }
-                }
-                accidentResult.AgreedStatement?.let {
-                    hld.cbAgreedStatement.isChecked = it
-                }
+        }
+        accidentResult.IsDamaged3PersonProperty?.let {
+            if (it) {
+                hld.rbIsDamaged3PersonPropertyYes.isChecked = true
+            } else {
+                hld.rbIsDamaged3PersonPropertyNo.isChecked = true
+                hld.lytIsAgree.showIf { true }
             }
         }
 
+
+        accidentResult.IsAgree?.let {
+            if (it) {
+                hld.rbIsAgreeYes.isChecked = true
+            } else {
+                hld.rbIsAgreeNo.isChecked = true
+            }
+        }
+        accidentResult.AgreedStatement?.let {
+            hld.cbAgreedStatement.isChecked = it
+        }
+
+
+
         hld.lytVehicleCount.showIf {
-            eventType == "1.1.1." ||
+            eventType == EventType.EVENT_1_1_1.toString() ||
                     eventType == "1.1.2.1." ||
                     eventType == "1.1.2.4." ||
                     eventType == "1.1.2.5." ||
@@ -133,8 +131,8 @@ data class AccidentResultBlock(
                 hld.lytIsAgree.showIf { false }
             }
 
-            vekData?.vekData?.vekData?.AccidentResult?.VehicleCount =
-                it.toString().toIntOrNull()
+            accidentResult.VehicleCount = it.toString().toIntOrNull()
+            accidentResultListener.invoke(accidentResult)
         }
 
         hld.rbParentVehicleInRunningOrder.setOnCheckedChangeListener { group, checkedId ->
@@ -143,11 +141,14 @@ data class AccidentResultBlock(
                     if (eventType == "1.1.1." || eventType == "1.1.2.1.") {
                         hld.lytIsDamaged3PersonProperty.showIf { true }
                     }
-                    vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = true
+                    accidentResult.VehicleInRunningOrder = true
+                    accidentResultListener.invoke(accidentResult)
                 }
                 R.id.rb_VehicleInRunningOrder_No -> {
                     hld.lytIsDamaged3PersonProperty.showIf { false }
-                    vekData?.vekData?.vekData?.AccidentResult?.VehicleInRunningOrder = false
+
+                    accidentResult.VehicleInRunningOrder = false
+                    accidentResultListener.invoke(accidentResult)
                 }
             }
         }
@@ -156,15 +157,18 @@ data class AccidentResultBlock(
             when (checkedId) {
                 R.id.rb_ClimbedOver_1 -> {
                     hld.lytIsDamaged3PersonProperty.showIf { eventType == "1.1.2.4." }
-                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 1
+                    accidentResult.ClimbedOver = 1
+                    accidentResultListener.invoke(accidentResult)
                 }
                 R.id.rb_ClimbedOver_2 -> {
                     hld.lytIsDamaged3PersonProperty.showIf { false }
-                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 2
+                    accidentResult.ClimbedOver = 2
+                    accidentResultListener.invoke(accidentResult)
                 }
                 R.id.rb_ClimbedOver_3 -> {
                     hld.lytIsDamaged3PersonProperty.showIf { false }
-                    vekData?.vekData?.vekData?.AccidentResult?.ClimbedOver = 3
+                    accidentResult.ClimbedOver = 3
+                    accidentResultListener.invoke(accidentResult)
                 }
             }
         }
@@ -173,12 +177,14 @@ data class AccidentResultBlock(
             when (checkedId) {
                 R.id.rb_IsAgree_Yes -> {
                     hld.cbAgreedStatement.isEnabled = true
-                    vekData?.vekData?.vekData?.AccidentResult?.IsAgree = true
+                    accidentResult.IsAgree = true
+                    accidentResultListener.invoke(accidentResult)
                 }
                 R.id.rb_IsAgree_No -> {
                     hld.cbAgreedStatement.isChecked = false
                     hld.cbAgreedStatement.isEnabled = false
-                    vekData?.vekData?.vekData?.AccidentResult?.IsAgree = false
+                    accidentResult.IsAgree = false
+                    accidentResultListener.invoke(accidentResult)
                 }
             }
         }
@@ -187,15 +193,18 @@ data class AccidentResultBlock(
             when (checkedId) {
                 R.id.rb_IsDamaged3PersonProperty_Yes -> {
                     hld.lytIsAgree.showIf { false }
-                    vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = true
+
+                    accidentResult.IsDamaged3PersonProperty = true
+                    accidentResultListener.invoke(accidentResult)
                 }
                 R.id.rb_IsDamaged3PersonProperty_No -> {
                     hld.lytIsAgree.showIf { eventType == "1.1.1." || eventType == "1.1.2.1." }
-                    vekData?.vekData?.vekData?.AccidentResult?.IsDamaged3PersonProperty = false
+
+                    accidentResult.IsDamaged3PersonProperty = false
+                    accidentResultListener.invoke(accidentResult)
                 }
             }
         }
-
     }
 
     class ViewHolder(view: View, adapter: FlexibleAdapter<*>) : FlexibleViewHolder(view, adapter) {
@@ -237,43 +246,22 @@ data class AccidentResultBlock(
 }
 
 
-class VekManager {
-
-    var vekData: VekData? = null
-
-    class VekData {
-        var vekData: VekDataInner? = null
-
-        class VekDataInner {
-            var AccidentResult: AccidentResultClass? = null
-
-            class AccidentResultClass {
-                var VehicleCount: Int? = null
-                var VehicleInRunningOrder: Boolean? = null
-                var ClimbedOver: Int? = null
-                var IsDamaged3PersonProperty: Boolean? = null
-                var IsAgree: Boolean? = null
-                var AgreedStatement: Boolean? = null
-            }
-        }
-    }
-}
-
-class SaveReportReq {
-    class MessageClass
+class AccidentResultClass {
+    var VehicleCount: Int? = null
+    var VehicleInRunningOrder: Boolean? = null
+    var ClimbedOver: Int? = null
+    var IsDamaged3PersonProperty: Boolean? = null
+    var IsAgree: Boolean? = null
+    var AgreedStatement: Boolean? = null
 }
 
 enum class EventType(val version: String) {
-    EVENT_1_1_1("1.1.1.")
-}
+    EVENT_1_1_1("1.1.1.");
 
-class VekReportSelector(
-    val isVek: Boolean = true,
-    val vekData: VekManager? = null,
-    val reportReq: SaveReportReq.MessageClass? = null
-) {
+    override fun toString(): String = version
 }
 
 inline fun View.showIf(block: () -> Boolean) {
     visibility = if (block()) View.VISIBLE else View.GONE
 }
+
